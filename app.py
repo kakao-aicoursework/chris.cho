@@ -1,5 +1,8 @@
 from ui.chat_interface import ChatInterface
-from ui.file_manager import open_file_dialog, save_file_dialog
+from config.open_api_config import initialize_openai_api
+
+# OpenAI API 초기화
+initialize_openai_api()
 
 def on_send(user_input):
     # 여기에 사용자 입력 처리 로직을 추가하세요.
