@@ -42,7 +42,7 @@ class TestVectorDBManager(unittest.TestCase):
         parsed_data = documents, ids, None
 
         # 데이터 삽입 시도
-        self.vector_db_manager.insert_data('kdrama', parsed_data)
+        self.vector_db_manager.insert_data(parsed_data, 'kdrama')
 
         row_count = self.vector_db_manager.get_row_count('kdrama')
 
@@ -55,7 +55,7 @@ class TestVectorDBManager(unittest.TestCase):
         test_query_vector = ["romantic comedy drama"]
 
         # 벡터 쿼리 시도
-        results = self.vector_db_manager.query_vector('kdrama', test_query_vector)
+        results = self.vector_db_manager.query_vector(test_query_vector, 'kdrama',)
         # 결과가 예상대로 나오는지 확인
         self.assertIsNotNone(results)
         self.assertIsInstance(results, dict)
