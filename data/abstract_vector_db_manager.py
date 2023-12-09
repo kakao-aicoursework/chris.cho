@@ -5,21 +5,13 @@ class AbstractVectorDBManager(abc.ABC):
     '''
 
     @abc.abstractmethod
-    def insert_data(self, parsed_data):
-        '''
-        파싱된 데이터를 vectorDB에 삽입합니다.
-
-        :param parsed_data:
-        :return:
-        '''
+    def __init__(self, db_name=None):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def query_vector(self, vector):
-        '''
-        벡터를 기반으로 데이터를 조회합니다.
+    def insert_data(self, parsed_data):
+        raise NotImplementedError
 
-        :param vector:
-        :return:
-        '''
+    @abc.abstractmethod
+    def query_data(self, query_texts, n_results):
         raise NotImplementedError

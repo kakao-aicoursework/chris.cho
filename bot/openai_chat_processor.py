@@ -2,9 +2,10 @@ import openai
 import json
 
 class OpenAIChatProcessor:
-    def __init__(self, gpt_model, temperature=0.7, functions = None, available_functions=None):
+    def __init__(self, gpt_model, temperature=0.7, max_tokens = 1024, functions = None, available_functions=None):
         self.gpt_model = gpt_model
         self.temperature = temperature
+        self.max_tokens = max_tokens
         self.functions = functions
         self.available_functions = available_functions
 
@@ -13,7 +14,8 @@ class OpenAIChatProcessor:
         request_params = {
             "model": self.gpt_model,
             "messages": message_log,
-            "temperature": self.temperature
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens
         }
 
         # 'functions' 매개변수 처리

@@ -55,6 +55,44 @@ class ChatInterface:
             self.popup.destroy()
             self.popup = None
 
+    def show_loading_popup(self):
+        self.popup = self.show_popup_message(self.window, "처리중...")
+        pass
+
+    def close_loading_popup(self):
+        self.popup.destroy()
+        pass
+
+    def show_popup_message(self, window, message):
+        popup = tk.Toplevel(window)
+        popup.title("")
+
+        # 팝업 창의 내용
+        label = tk.Label(popup, text=message, font=("맑은 고딕", 12))
+        label.pack(expand=True, fill=tk.BOTH)
+
+        # 팝업 창의 크기 조절하기
+        window.update_idletasks()
+        popup_width = label.winfo_reqwidth() + 20
+        popup_height = label.winfo_reqheight() + 20
+        popup.geometry(f"{popup_width}x{popup_height}")
+
+        # 팝업 창의 중앙에 위치하기
+        window_x = window.winfo_x()
+        window_y = window.winfo_y()
+        window_width = window.winfo_width()
+        window_height = window.winfo_height()
+
+        popup_x = window_x + window_width // 2 - popup_width // 2
+        popup_y = window_y + window_height // 2 - popup_height // 2
+        popup.geometry(f"+{popup_x}+{popup_y}")
+
+        popup.transient(window)
+        popup.attributes('-topmost', True)
+
+        popup.update()
+        return popup
+
     def run(self):
         self.window.mainloop()
 

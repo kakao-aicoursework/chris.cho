@@ -3,10 +3,16 @@ import chromadb
 from data.abstract_vector_db_manager import AbstractVectorDBManager
 
 class ChromaVectorDBManager(AbstractVectorDBManager):
-    def __init__(self):
+    def __init__(self, db_name = None, metadata = None):
         self.client = chromadb.PersistentClient()
+        if db_name is not None:
+            self.get_or_create_collection(db_name, metadata)
 
-    def create_db(self, db_name, metadata=None):
+
+    def reset(self):
+        self.client.reset()
+
+    def get_or_create_collection(self, db_name, metadata=None):
         self.last_accessed_collection = self.client.get_or_create_collection(name=db_name, metadata=metadata)
         return self.last_accessed_collection
 
@@ -40,7 +46,7 @@ class ChromaVectorDBManager(AbstractVectorDBManager):
                    ids=ids)
 
 
-    def query_vector(self, query_texts, db_name=None, n_results=10):
+    def query_data(self, query_texts, db_name=None, n_results=10):
         '''
         벡터를 기반으로 데이터를 조회합니다.
         '''

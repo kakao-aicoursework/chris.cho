@@ -7,7 +7,7 @@ from tkinter import scrolledtext
 import tkinter.filedialog as filedialog
 
 # API 키가 저장된 파일의 경로
-key_file_path = './openai_key.txt'  # 실제 경로로 대체하세요
+key_file_path = '../config/openai_key.txt'  # 실제 경로로 대체하세요
 
 # 파일에서 API 키 읽기
 with open(key_file_path, 'r') as file:

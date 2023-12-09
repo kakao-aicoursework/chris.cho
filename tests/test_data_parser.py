@@ -7,7 +7,7 @@ class TestDataParser(unittest.TestCase):
         # 테스트에 필요한 DataParser 인스턴스를 초기화
         self.parser = DataParser()
         self.vector_db_manager = ChromaVectorDBManager()
-        self.vector_db_manager.create_db('test_data_parser')
+        self.vector_db_manager.get_or_create_collection('sample_kakao_channel_guides')
 
     def test_parse_valid_file_kakaotalk_channel(self):
         # 유효한 파일을 파싱하는 경우의 테스트
