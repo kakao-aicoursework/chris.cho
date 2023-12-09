@@ -7,13 +7,13 @@ class TestKakaoChannelQueriesReal(unittest.TestCase):
     def setUp(self):
         # 데이터베이스 매니저 초기화
         self.vector_db_manager = ChromaVectorDBManager()
-        self.vector_db_manager.get_or_create_collection('sample_kakao_channel_guides')
+        self.vector_db_manager.init_and_get_create_collection('sample_kakao_channel_guides')
 
 
         # 유효한 파일 경로에서 데이터 파싱 및 삽입
         self.parser = DataParser()
         valid_file_path = '../input/project_data_카카오톡채널.txt'
-        parsed_data = self.parser.parse_file_for_kakao_channel(valid_file_path)
+        parsed_data = self.parser.parse_file_for_kakao_guide_text(valid_file_path)
         self.vector_db_manager.insert_data(parsed_data)
 
     def test_answer_query_with_valid_keyword(self):
@@ -28,16 +28,18 @@ class TestKakaoChannelQueriesReal(unittest.TestCase):
 
     def test_answer_query_with_invalid_keyword(self):
         # 잘못된 키워드로 함수 호출
-        result = answer_kakao_channel_query(self.vector_db_manager, keyword='잘못된 키워드')
+        result = answer_kakao_channel_query(self.vector_db_manager, keyword='invaild')
         self.assertEqual(result, 'No relevant documents found.')
 
     def test_answer_query_with_empty_database(self):
         # 데이터베이스가 비어있는 경우
-        self.db_manager.clear_data()  # 데이터베이스 초기화
-        result = answer_kakao_channel_query(self.vector_db_manager, keyword='카카오톡 채널 관련 정보')
-        self.assertEqual(result, 'No data available.')
+        try:
+            self.vector_db_manager.init_and_get_create_collection('empty')
+        except ValueError:
+            pass
+        with self.assertRaises(ValueError):
+            result = answer_kakao_channel_query(self.vector_db_manager, keyword='카카오톡 채널 관련 정보')
 
-    # 추가적인 테스트 케이스를 여기에 구현할 수 있습니다.
 
 
 if __name__ == '__main__':

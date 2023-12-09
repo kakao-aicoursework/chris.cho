@@ -30,7 +30,7 @@ def init_database(local_path_path = './input/project_data_카카오톡채널.txt
     db_manager.reset()
     db_manager.get_or_create_collection('sample_kakao_channel_guides')
 
-    parsed_data = DataParser().parse_file_for_kakao_channel(local_path_path)
+    parsed_data = DataParser().parse_file_for_kakao_guide_text(local_path_path)
     db_manager.insert_data(parsed_data)
     return db_manager
 
@@ -46,8 +46,10 @@ def process_user_input(user_input, callback, DEBUG=False):
     if DEBUG:
         start_time = time.time()
 
+
     (response,
-     is_function_call_enabled) = chat_processor.process_chat_with_function(message_log)
+     is_function_call_enabled,
+     function_name) = chat_processor.process_chat_with_function(message_log)
 
     if DEBUG:
         dur_time_sec = round(time.time() - start_time, 1)

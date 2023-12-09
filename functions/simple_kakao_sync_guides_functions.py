@@ -1,30 +1,6 @@
-from data.chroma_db_manager import ChromaVectorDBManager
+from functions.kakao_info_retriever import KakaoInfoRetriever
 
 _tag = '카카오싱크와 카카오채널'
-
-class KakaoChannelInfoRetriever:
-    def __init__(self):
-        pass
-    def get_info(self, str_text, n_results=10):
-        db_manger = ChromaVectorDBManager('sample_kakao_sync_guides')
-        query_result_dict = db_manger.query_data(query_texts=[f"{str_text}"],
-                                                      n_results=n_results)
-        answer = self.parse_doc(query_result_dict)
-        return answer
-
-    def parse_doc(self, query_result_dict, max_len=2048):
-        modified_target_ids = []
-        for i, str_document in enumerate(query_result_dict['documents'][0]):
-            modified_target_ids.append(f"{str_document}")
-
-        if len(modified_target_ids) == 0:
-            raise ValueError(f"query_result_dict['documents'][0]={query_result_dict['documents'][0]}")
-
-        str_targets = "\n".join(modified_target_ids)
-        if max_len is not None:
-            str_targets = str_targets[:max_len]
-
-        return str_targets
 
 def get_kakao_sync_info(**kwargs):
     keyword = kwargs.get('topic', '')  # 'keyword' 키가 없으면 '기본값'을 사용
@@ -35,7 +11,7 @@ def get_kakao_sync_info(**kwargs):
     else:
         str_text = f"{keyword}"
 
-    retriever = KakaoChannelInfoRetriever()
+    retriever = KakaoInfoRetriever('sample_kakao_sync_guides')
     return retriever.get_info(str_text)
 
 _function_metadata = {

@@ -1,12 +1,12 @@
 from data.abstract_vector_db_manager import AbstractVectorDBManager
 
-def parse_doc(query_result_dict):
+def parse_doc(result_queries):
     modified_target_ids = []
-    for i, str_document in enumerate(query_result_dict['documents'][0]):
+    for i, str_document in enumerate(result_queries):
         modified_target_ids.append(f"{str_document}")
 
     if len(modified_target_ids) == 0:
-        raise ValueError(f"query_result_dict['documents'][0]={query_result_dict['documents'][0]}")
+        raise ValueError(f"result_queries= {result_queries}")
 
     str_targets = "\n".join(modified_target_ids)
     return str_targets
@@ -21,6 +21,8 @@ def answer_kakao_channel_query(db_manger:AbstractVectorDBManager, **kwargs):
     """
     keyword = kwargs.get('keyword', '')  # 'keyword' 키가 없으면 '기본값'을 사용
     meta_context = kwargs.get('meta_context', None)
+    if len(keyword) == 0:
+        raise ValueError
 
     if meta_context is not None:
         str_text = f"{keyword}\n{meta_context}"
@@ -28,8 +30,8 @@ def answer_kakao_channel_query(db_manger:AbstractVectorDBManager, **kwargs):
         str_text = f"{keyword}"
 
     # 여기에 데이터 소스에서 정보를 검색하고 질의에 대한 답변
-    query_result_dict = db_manger.query_data(query_texts=[f"{str_text}"], n_results=10)
-    ret = parse_doc(query_result_dict)
+    result_queries = db_manger.query_data(query_texts=[f"{str_text}"], n_results=10)
+    ret = parse_doc(result_queries)
 
     return ret
 

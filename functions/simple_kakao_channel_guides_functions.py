@@ -1,25 +1,5 @@
-from data.chroma_db_manager import ChromaVectorDBManager
+from functions.kakao_info_retriever import KakaoInfoRetriever
 
-class KakaoChannelInfoRetriever:
-    def __init__(self):
-        pass
-    def get_info(self, str_text, n_results=10):
-        db_manger = ChromaVectorDBManager('sample_kakao_channel_guides')
-        query_result_dict = db_manger.query_data(query_texts=[f"{str_text}"],
-                                                 n_results=n_results)
-        answer = self.parse_doc(query_result_dict)
-        return answer
-
-    def parse_doc(self, query_result_dict):
-        modified_target_ids = []
-        for i, str_document in enumerate(query_result_dict['documents'][0]):
-            modified_target_ids.append(f"{str_document}")
-
-        if len(modified_target_ids) == 0:
-            raise ValueError(f"query_result_dict['documents'][0]={query_result_dict['documents'][0]}")
-
-        str_targets = "\n".join(modified_target_ids)
-        return str_targets
 
 def get_kakao_channel_info(**kwargs):
     keyword = kwargs.get('topic', '')  # 'keyword' 키가 없으면 '기본값'을 사용
@@ -30,7 +10,7 @@ def get_kakao_channel_info(**kwargs):
     else:
         str_text = f"{keyword}"
 
-    retriever = KakaoChannelInfoRetriever()
+    retriever = KakaoInfoRetriever(db_name='sample_kakao_channel_guides')
     return retriever.get_info(str_text)
 
 def old_get_kakao_channel_info(topic, additional_info=None):

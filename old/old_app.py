@@ -30,7 +30,7 @@ def init_database(local_path_path = './input/project_data_카카오톡채널.txt
     db_manager.reset()
     db_manager.get_or_create_collection('sample_kakao_channel_guides')
 
-    parsed_data = DataParser().parse_file_for_kakao_channel(local_path_path)
+    parsed_data = DataParser().parse_file_for_kakao_guide_text(local_path_path)
     db_manager.insert_data(parsed_data)
     return db_manager
 

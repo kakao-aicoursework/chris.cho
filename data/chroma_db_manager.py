@@ -53,7 +53,7 @@ class ChromaVectorDBManager(AbstractVectorDBManager):
                    ids=ids)
 
 
-    def query_data(self, query_texts, db_name=None, n_results=10):
+    def query_data(self, query_texts, db_name=None, n_results=10, max_dist_th=1.5):
         '''
         벡터를 기반으로 데이터를 조회합니다.
         '''
@@ -62,4 +62,18 @@ class ChromaVectorDBManager(AbstractVectorDBManager):
         else:
             collection = self.client.get_collection(db_name)
 
-        return collection.query(query_texts=query_texts, n_results=n_results)
+        result_dict = collection.query(query_texts=query_texts, n_results=n_results)
+
+        distances = result_dict['distances'][0]
+        documents = result_dict['documents'][0]
+
+        result_queries = []
+
+        for i, distance in enumerate(distances):
+            if distance >= max_dist_th:
+                continue
+
+            result_queries.append(documents)
+
+
+        return result_queries
