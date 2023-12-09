@@ -1,3 +1,5 @@
+import time
+
 from ui.chat_interface import ChatInterface
 from config.open_api_config import initialize_openai_api
 from bot.openai_chat_processor import OpenAIChatProcessor
@@ -33,7 +35,7 @@ def init_database(local_path_path = './input/project_data_카카오톡채널.txt
     return db_manager
 
 # 비즈니스 로직을 별도의 함수로 정의
-def process_user_input(user_input, callback):
+def process_user_input(user_input, callback, DEBUG=False):
     # 여기서 비동기적으로 처리 로직을 수행
     from functions import simple_kakao_channel_guides_functions as function_module
 
@@ -41,15 +43,31 @@ def process_user_input(user_input, callback):
     message_log.append(function_module.default_system_log_dict)
     message_log.append({'role': 'user', 'content': f'{user_input}'})
 
-    response = chat_processor.process_chat_with_function(message_log)
-    callback(response)
+    if DEBUG:
+        start_time = time.time()
+
+    (response,
+     is_function_call_enabled) = chat_processor.process_chat_with_function(message_log)
+
+    if DEBUG:
+        dur_time_sec = round(time.time() - start_time, 1)
+    else:
+        dur_time_sec = None
+
+    callback(response, is_function_call_enabled, dur_time_sec, DEBUG)
 
 # ChatInterface에서 사용할 콜백 함수
 def on_send(user_input):
     global chat_interface
-    def callback(response):
+    def callback(response, is_function_call_enabled, dur_time_sec, DEBUG):
         message = response.choices[0].message.content
-        print(f"user_input:{user_input} ==> {message}")
+        if DEBUG:
+            message = (f"[DEBUG] <dur_time_sec={dur_time_sec}>"
+                       f"<is_function_call_enabled={is_function_call_enabled}>\n"
+                       + message)
+            print(f"user_input:{user_input} ==> response_message:{message}")
+        else:
+            pass
 
         chat_interface.display_bot_message(message=message)
 

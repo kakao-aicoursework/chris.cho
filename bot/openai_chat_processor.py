@@ -30,7 +30,7 @@ class OpenAIChatProcessor:
         response = openai.ChatCompletion.create(**request_params)
         return response
 
-    def process_chat_with_function(self, message_log, functions=None, function_call='auto', DEBUG=True):
+    def process_chat_with_function(self, message_log, functions=None, function_call='auto', DEBUG=False):
         response = self.process_chat(message_log, functions, function_call)
         response_message = response["choices"][0]["message"]
 
@@ -39,7 +39,7 @@ class OpenAIChatProcessor:
             if DEBUG:
                 print(f"[***] function_call is not call!!!!!!!!!!!")
 
-            return response
+            return response, False
         else:
             function_name = response_message["function_call"]["name"]
             function_to_call = self.available_functions[function_name]
@@ -61,6 +61,6 @@ class OpenAIChatProcessor:
                 model=self.gpt_model,
                 messages=message_log,
             )
-            return second_response
+            return second_response, True
 
 

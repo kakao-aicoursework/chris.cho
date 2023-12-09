@@ -36,8 +36,8 @@ class ChatInterface:
         self.conversation.config(state=tk.DISABLED)
         self.conversation.see(tk.END)
 
-    def display_bot_message(self, message):
-        self.display_message(f"Bot: {message}\n", "assistant")
+    def display_bot_message(self, message, bot_name='Bot'):
+        self.display_message(f"{bot_name}: {message}\n", "assistant")
 
     def on_send(self):
         user_input = self.user_entry.get()
