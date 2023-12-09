@@ -10,7 +10,7 @@ class ChatInterface:
         self.window.title(title)
 
         self.setup_window()
-        self.display_bot_message("안녕하세요. 무엇을 도와드릴까요?")
+        self.display_bot_message("안녕하세요. 챗봇 서비스를 시작합니다. 궁금하신 내용을 물어보세요?")
 
     def setup_window(self):
         font = ("맑은 고딕", 10)
