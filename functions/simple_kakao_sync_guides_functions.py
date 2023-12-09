@@ -1,16 +1,18 @@
 from data.chroma_db_manager import ChromaVectorDBManager
 
+_tag = '카카오싱크와 카카오채널'
+
 class KakaoChannelInfoRetriever:
     def __init__(self):
         pass
     def get_info(self, str_text, n_results=10):
-        db_manger = ChromaVectorDBManager('sample_kakao_channel_guides')
+        db_manger = ChromaVectorDBManager('sample_kakao_sync_guides')
         query_result_dict = db_manger.query_data(query_texts=[f"{str_text}"],
-                                                 n_results=n_results)
+                                                      n_results=n_results)
         answer = self.parse_doc(query_result_dict)
         return answer
 
-    def parse_doc(self, query_result_dict):
+    def parse_doc(self, query_result_dict, max_len=2048):
         modified_target_ids = []
         for i, str_document in enumerate(query_result_dict['documents'][0]):
             modified_target_ids.append(f"{str_document}")
@@ -19,9 +21,12 @@ class KakaoChannelInfoRetriever:
             raise ValueError(f"query_result_dict['documents'][0]={query_result_dict['documents'][0]}")
 
         str_targets = "\n".join(modified_target_ids)
+        if max_len is not None:
+            str_targets = str_targets[:max_len]
+
         return str_targets
 
-def get_kakao_channel_info(**kwargs):
+def get_kakao_sync_info(**kwargs):
     keyword = kwargs.get('topic', '')  # 'keyword' 키가 없으면 '기본값'을 사용
     meta_context = kwargs.get('additional_info', None)
 
@@ -33,27 +38,15 @@ def get_kakao_channel_info(**kwargs):
     retriever = KakaoChannelInfoRetriever()
     return retriever.get_info(str_text)
 
-def old_get_kakao_channel_info(topic, additional_info=None):
-    garbage_topic_info = {
-        "topic":{topic},
-        "additional_info":f"{additional_info}",
-        "message": "호출됬다 굿굿",
-    }
-    return str(garbage_topic_info)
-
-available_functions = {
-            "get_kakao_channel_info": get_kakao_channel_info
-}
-
 _function_metadata = {
-    "name": "get_kakao_channel_info",
-    "description": "카카오톡 채널과 관련된 정보를 제공합니다. 예를 들어, 채널 기능, 설정 방법, API 사용법 등에 대한 질문에 답변합니다.",
+    "name": "get_kakao_sync_info",
+    "description": f"{_tag}과 관련된 정보를 제공합니다.예를 들어, f{_tag} 도입에 필요한 검수 및 설정 등에 대한 질문에 답변합니다.",
     "parameters": {
         "type": "object",
         "properties": {
             "topic": {
                 "type": "string",
-                "description": "질문의 주제나 관심사, 예: 'API', '사용법', '설정'"
+                "description": "질문의 주제나 관심사, 예: '검수', '설정', '도입'"
             },
             "additional_info": {
                 "type": "string",
@@ -65,11 +58,14 @@ _function_metadata = {
 }
 
 
+available_functions = {
+            "get_kakao_sync_info": get_kakao_sync_info
+}
 
 functions = [_function_metadata]
 
-default_message_log_dict = {'role': 'user', 'content': '카카오톡 채널이 무엇인가요?'}
-default_message_log_dict_rev = {'role': 'user', 'content': '카카오톡 채널의 IOS관련 내용과 API 및 기능좀 알려줘 '}
+default_message_log_dict = {'role': 'user', 'content': f'{_tag}이 무엇인가요?'}
+default_message_log_dict_rev = {'role': 'user', 'content': f'{_tag}의 도입 방법 알려줘 '}
 
 
 
@@ -86,5 +82,5 @@ def get_base_system_prompt(tag):
 default_system_log_dict = {
             "role": "system",
             "content": f'''
-                {get_base_system_prompt('카카오톡 채널')}
+                {get_base_system_prompt(_tag)}
             '''}

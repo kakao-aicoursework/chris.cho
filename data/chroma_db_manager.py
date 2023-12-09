@@ -10,8 +10,15 @@ class ChromaVectorDBManager(AbstractVectorDBManager):
 
 
     def reset(self):
+        #self.client.get_settings().allow_reset = True
         self.client.reset()
 
+    def init_and_get_create_collection(self, db_name, metadata=None):
+        try:
+            self.client.delete_collection(db_name)
+        except ValueError:
+            pass
+        return self.get_or_create_collection(db_name, metadata)
     def get_or_create_collection(self, db_name, metadata=None):
         self.last_accessed_collection = self.client.get_or_create_collection(name=db_name, metadata=metadata)
         return self.last_accessed_collection

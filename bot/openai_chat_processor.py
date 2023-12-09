@@ -30,21 +30,26 @@ class OpenAIChatProcessor:
         response = openai.ChatCompletion.create(**request_params)
         return response
 
-    def process_chat_with_function(self, message_log, functions=None, function_call='auto', DEBUG=False):
+    def process_chat_with_function(self, message_log, functions=None, function_call='auto', DETAIL_DEBUG=True):
         response = self.process_chat(message_log, functions, function_call)
         response_message = response["choices"][0]["message"]
-
         # 함수 호출 처리
         if not response_message.get("function_call"):
-            if DEBUG:
-                print(f"[***] function_call is not call!!!!!!!!!!!")
+            if DETAIL_DEBUG:
+                print(
+                    f"[*] not function call!!! response_message_len = {len(response_message['content'])}\n content={response_message['content']}")
 
-            return response, False
+            return response, False, None
         else:
             function_name = response_message["function_call"]["name"]
+            if DETAIL_DEBUG:
+                print(f"[***] <function_call({function_name}) !!!!")
+
             function_to_call = self.available_functions[function_name]
             function_args = json.loads(response_message["function_call"]["arguments"])
             function_response = function_to_call(**function_args)
+            if DETAIL_DEBUG:
+                print(f"[***] <function_call({function_name}), result len = {len(function_response)}>\n function_response={function_response}\n************* <function_call result len = {len(function_response)}/>")
 
             # 함수 응답을 대화에 추가
             message_log.append(response_message)
@@ -61,6 +66,6 @@ class OpenAIChatProcessor:
                 model=self.gpt_model,
                 messages=message_log,
             )
-            return second_response, True
+            return second_response, True, function_name
 
 

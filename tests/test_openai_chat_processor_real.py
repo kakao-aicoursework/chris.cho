@@ -74,7 +74,7 @@ class TestOpenAIChatProcessorReal(unittest.TestCase):
                                              functions=simple_kakao_channel_guides_functions.functions,
                                              available_functions=simple_kakao_channel_guides_functions.available_functions)  # 실제 모델 이름으로 대체
 
-        response, _ = self.processor.process_chat_with_function(message_log, functions=simple_kakao_channel_guides_functions.functions)
+        response, _, _= self.processor.process_chat_with_function(message_log, functions=simple_kakao_channel_guides_functions.functions)
 
         print(f"[input] message_log=", message_log)
         print(f"[output] simple_kakao_channel_guides_functions_anwer=", response.choices[0].message.content)
