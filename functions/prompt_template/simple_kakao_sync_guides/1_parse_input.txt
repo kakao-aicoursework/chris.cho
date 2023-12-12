@@ -4,29 +4,7 @@
 소개 후에는 사용자에게 "도움이 필요하신 것이 있나요?"라고 물어보며 답변할 준비를 하세요.
 </persona>
 
-<function example>
-{
-"name": "get_current_weather",
-    "description": "특정 지역의 날씨를 알려줍니다.",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "location": {
-                "type": "string",
-                "description": "지역이름 eg. 서울, 부산, 제주도",
-            },
-            "unit": {"type": "string", "enum": ["섭씨", "화씨"]},
-        },
-        "required": ["location"],
-    }
-   }
-- name은 <함수명>
-- description은 <함수에 대한 설명>
-- parameters는 <함수 파라미터에 대한 상세 설명>
-</function example>
-
 <functions>
-<functions>은 <function example>의 json형태로 구성되어 있다.
 {functions}
 </functions>
 
@@ -38,17 +16,12 @@
 {user_input}
 </user_input>
 
-<user_context>와 <user_input> 내의 정보를 추출합니다.
-<user_input> 내용을 위주로 하되,
-<user_context>내용도 참고하여
-{tag}와 관련된 내용이
-<functions>의 description과 부합되면
-해당 함수명과 그에 맞는 파라미터(혹은 속성) 키워드를 추출하세요.
-
+<user_context>와 <user_input>로부터 정보를 추출합니다.
 
 <출력 양식>
-<functions>내용 중에 {tag}와 관련된
-<함수명>이 있다면 <함수 파라미터>와 함게
-정보를 추출하여 키워드 형태로 출력한다.
-반대로 관련 정보가 없는 경우 NONE을 출력한다.
-
+<user_context>와 <user_input>내에 {tag}와 관련된 내용이 없는 경우에는 경우에는 <NONE>을 출력한다.
+반대로 관련된 내용이 있는 경우에는 아래와 같은 값을 json형태로 추가하여 출력한다
+ -is_related : 1 or 0 #{tag}와 연관된 질의 여부
+ -function_call : 1 or 0 #<functions>내의 연관된 함수 여부
+ -function_name : 연관된 <functions>내 함수명
+ -arguments : 유저 입력으로 부터 추출된 주요 정보를 기반으로 function_name의 property의 dict

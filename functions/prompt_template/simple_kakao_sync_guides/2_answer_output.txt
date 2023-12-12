@@ -1,6 +1,10 @@
-<context>
-{context}
-</context>
+<user_context>
+{user_context}
+</user_context>
+
+<function_response>
+{function_response}
+</function_response>
 
 <user_input>
 {user_input}

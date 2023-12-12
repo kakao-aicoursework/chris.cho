@@ -98,14 +98,25 @@ class OpenAIChatProcessorLanChain:
                        user_input = user_input,
                        user_context = user_context,
                        functions = request_params["functions"])
-        context = self.preprocess_chain(context)
-
-        if 'NONE' in context['keywords']:
-            context['context'] = user_context
-            response_text = self.answer_llm(context)
-            return self.convert_result_txt_to_response(response_text['new_user_context']), context
+        context_dict = self.preprocess_chain(context)
+        if 'keywords' in context_dict:
+            try:
+                converted_dict = json.loads(context_dict['keywords'])
+            except json.JSONDecodeError as e:
+                converted_dict = str(e)
         else:
-            return self.convert_result_txt_to_response(context, is_function=True), context
+            raise ValueError(f"context_dict={context_dict}")
+
+        try:
+            if converted_dict['is_related'] == 0 or converted_dict['function_call'] == 0:
+                context_dict['function_response'] = ""
+                response_dict = self.answer_llm(context_dict)
+                return self.convert_result_to_response(response_dict), context_dict
+            else:
+                return self.convert_result_to_response(converted_dict), context_dict
+        except TypeError as err:
+            raise TypeError(f"converted_dict={converted_dict}")
+
 
     def convert_input_to_txt(self, message_log):
         user_input = ""
@@ -127,24 +138,36 @@ class OpenAIChatProcessorLanChain:
 
         return user_input, user_context
 
-    def convert_result_txt_to_response(self, response_text, is_function=False):
+    def convert_result_to_response(self, response_dict):
         response = {}
-        content_dict = {'content' : response_text}
+        if 'new_user_context' in response_dict:
+            response_text = response_dict['new_user_context']
+            content_dict = {'content': response_text}
+        else:
+            content_dict = None
+
+        if 'function_call' in response_dict and response_dict['function_call']:
+            function_call_data = {'name':response_dict['function_name'],
+                                         'arguments':response_dict['arguments']}
+
+            #response_text = f"response_dict={response_dict}"
+            content_dict = {'function_call' : function_call_data}
+        else:
+            pass
+
+
         message_dict = {'message': content_dict}
 
         response['choices'] = [
             message_dict
         ]
-        if is_function:
-            response['function_call'] = {}
-
 
         return response
 
 
 
     def process_chat_with_function(self, message_log, functions=None, function_call='auto', DETAIL_DEBUG=True):
-        response, context = self.process_chat(message_log, functions, function_call)
+        response, context_dict = self.process_chat(message_log, functions, function_call)
         response_message = response["choices"][0]["message"]
         # 함수 호출 처리
         if not response_message.get("function_call"):
@@ -159,25 +182,22 @@ class OpenAIChatProcessorLanChain:
                 print(f"[***] <function_call({function_name}) !!!!")
 
             function_to_call = self.available_functions[function_name]
-            function_args = json.loads(response_message["function_call"]["arguments"])
+            arguments = response_message["function_call"]["arguments"]
+            if type(arguments) is str:
+                function_args = json.loads(arguments)
+            else:
+                function_args = arguments
+
             function_response = function_to_call(**function_args)
             if DETAIL_DEBUG:
                 print(
                     f"[***] <function_call({function_name}), result len = {len(function_response)}>\n function_response={function_response}\n************* <function_call result len = {len(function_response)}/>")
 
             # 함수 응답을 대화에 추가
-            message_log.append(response_message)
-            message_log.append(
-                {
-                    "role": "function",
-                    "name": function_name,
-                    "content": function_response,
-                }
-            )
-
+            context_dict['function_response'] = function_response
             # 두 번째 응답 생성
-            response_text = self.answer_llm(context)
-            second_response =  self.convert_result_txt_to_response(response_text['new_user_context'])
+            response_dict = self.answer_llm(context_dict)
+            second_response =  self.convert_result_to_response(response_dict)
             return second_response, True, function_name
 
 
