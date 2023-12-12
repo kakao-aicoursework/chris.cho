@@ -18,10 +18,14 @@ class OpenAIChatProcessorLanChain:
                  max_tokens=1024,
                  functions=None,
                  available_functions=None,
-                 init_memory=None):
+                 init_memory=None,
+                 init_tag = None):
+
         self.gpt_model = gpt_model
         self.temperature = temperature
         self.max_tokens = max_tokens
+
+        self.init_concpet = init_tag
         self.functions = functions
         self.available_functions = available_functions
 
@@ -29,28 +33,18 @@ class OpenAIChatProcessorLanChain:
                               temperature=self.temperature,
                               max_tokens=self.max_tokens)
 
-        self.init_llm_chain(init_memory)
         template_path_list = [
             './functions/prompt_template/simple_kakao_sync_guides/1_parse_input.txt',
-            './functions/prompt_template/simple_kakao_sync_guides/2_parse_user_input.txt',
-            './functions/prompt_template/simple_kakao_sync_guides/3_answer_output.txt'
+            './functions/prompt_template/simple_kakao_sync_guides/2_answer_output.txt'
         ]
-        self.init_real_llm_chain(template_path_list)
+        output_key_list = ['keywords', 'new_user_context']
+        self.init_real_llm_chain(template_path_list, output_key_list)
 
-    def read_prompt_template(self, file_path: str) -> str:
-        with open(file_path, "r") as f:
-            prompt_template = f.read()
-
-        return prompt_template
-
-    def init_real_llm_chain(self, template_path_list):
+    def init_real_llm_chain(self, template_path_list, output_key_list):
         self.llm_dict = {}
-        output_key_list = ['in','keywords', 'final_context']
         for i, template_path in enumerate(template_path_list):
-
             dirname, basename = os.path.split(template_path)
             name, ext = os.path.splitext(basename)
-            #output_key = name
             output_key = output_key_list[i]
 
             llm_chain = LLMChain(
@@ -65,36 +59,20 @@ class OpenAIChatProcessorLanChain:
 
         self.preprocess_chain = SequentialChain(
             chains=[
-                self.llm_dict['in'],
-                self.llm_dict['keywords']
+                self.llm_dict['keywords'],
             ],
-            input_variables=["tag", "user_input"],
+            input_variables=["tag", "user_input", "user_context", "functions"],
             output_variables=["keywords"],
             verbose=True,
         )
-        self.answer_llm = self.llm_dict['final_context']
 
+        self.answer_llm = self.llm_dict['new_user_context']
+    def read_prompt_template(self, file_path: str) -> str:
+        with open(file_path, "r") as f:
+            prompt_template = f.read()
 
+        return prompt_template
 
-
-    def init_llm_chain(self, init_memory):
-        role = init_memory[0]['role']
-        if role.lower() != 'system':
-            raise ValueError(f"role={role}")
-
-        content = init_memory[0]['content']
-
-        system_message_prompt = SystemMessage(content=content)
-
-        human_template = "{text}"
-        human_message_prompt = HumanMessagePromptTemplate.from_template(
-            human_template)
-
-        chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt,
-                                                        human_message_prompt])
-
-        chain = LLMChain(llm=self.llm, prompt=chat_prompt)
-        self.chain = chain
 
     def process_chat(self, message_log, functions=None, function_call=None):
         # 기본 매개변수 설정
@@ -105,7 +83,6 @@ class OpenAIChatProcessorLanChain:
             "max_tokens": self.max_tokens
         }
 
-        # 'functions' 매개변수 처리
         if functions:
             request_params["functions"] = functions
             request_params["function_call"] = 'auto' if function_call is None else function_call
@@ -114,25 +91,41 @@ class OpenAIChatProcessorLanChain:
             request_params["function_call"] = 'auto' if function_call is None else function_call
 
         # API 호출
-        input_text = self.convert_input_to_txt(message_log)
+        (user_input,
+         user_context) = self.convert_input_to_txt(message_log)
 
-        context = dict(tag="카카오톡 싱크",
-                       user_input = input_text)
+        context = dict(tag=self.init_concpet,
+                       user_input = user_input,
+                       user_context = user_context,
+                       functions = request_params["functions"])
         context = self.preprocess_chain(context)
+
         if 'NONE' in context['keywords']:
+            context['context'] = user_context
             response_text = self.answer_llm(context)
-            return self.convert_result_txt_to_response(response_text['final_context'])
+            return self.convert_result_txt_to_response(response_text['new_user_context']), context
         else:
-            return self.convert_result_txt_to_response(response_text['final_context'], is_function=True)
+            return self.convert_result_txt_to_response(context, is_function=True), context
 
     def convert_input_to_txt(self, message_log):
-        input_text = ""
-        for message_dict in message_log:
+        user_input = ""
+        user_context = ""
+
+        input_message_dict = message_log[-1]
+        if input_message_dict['role'].lower() == 'user':
+            user_input += f"{input_message_dict['content']}\n"
+        else:
+            pass
+
+        uesr_memory = message_log[:-1]
+        for message_dict in uesr_memory:
             if message_dict['role'].lower() == 'system':
                 continue
 
-            input_text += f"{message_dict['content']}\n"
-        return input_text
+            user_context += f"{message_dict['content']}\n"
+
+
+        return user_input, user_context
 
     def convert_result_txt_to_response(self, response_text, is_function=False):
         response = {}
@@ -151,7 +144,7 @@ class OpenAIChatProcessorLanChain:
 
 
     def process_chat_with_function(self, message_log, functions=None, function_call='auto', DETAIL_DEBUG=True):
-        response = self.process_chat(message_log, functions, function_call)
+        response, context = self.process_chat(message_log, functions, function_call)
         response_message = response["choices"][0]["message"]
         # 함수 호출 처리
         if not response_message.get("function_call"):
@@ -183,10 +176,8 @@ class OpenAIChatProcessorLanChain:
             )
 
             # 두 번째 응답 생성
-            second_response = openai.ChatCompletion.create(
-                model=self.gpt_model,
-                messages=message_log,
-            )
+            response_text = self.answer_llm(context)
+            second_response =  self.convert_result_txt_to_response(response_text['new_user_context'])
             return second_response, True, function_name
 
 

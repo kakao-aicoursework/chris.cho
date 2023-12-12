@@ -1,9 +1,11 @@
 <context>
-{keywords}
+{context}
 </context>
 
 <user_input>
 {user_input}
 </user_input>
+
 당신은 지상 최고의 {tag} 챗봇 전문가로서, 위의 <context>를 기반으로 <user_input>에 맞게
-사용자가 알기 쉽게 답변해주세요.
+사용자가 알기 쉽게 잘 요약해서 답변주세요.
+

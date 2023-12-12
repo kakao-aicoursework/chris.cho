@@ -1,6 +1,6 @@
 from functions.kakao_info_retriever import KakaoInfoRetriever
 
-_tag = '카카오싱크와 카카오채널'
+global_tag = '카카오싱크와 카카오채널'
 
 def get_kakao_sync_info(**kwargs):
     keyword = kwargs.get('topic', '')  # 'keyword' 키가 없으면 '기본값'을 사용
@@ -16,7 +16,7 @@ def get_kakao_sync_info(**kwargs):
 
 _function_metadata = {
     "name": "get_kakao_sync_info",
-    "description": f"{_tag}과 관련된 정보를 제공합니다.예를 들어, f{_tag} 도입에 필요한 검수 및 설정 등에 대한 질문에 답변합니다.",
+    "description": f"{global_tag}과 관련된 정보를 제공합니다.예를 들어, f{global_tag} 도입에 필요한 검수 및 설정 등에 대한 질문에 답변합니다.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -40,8 +40,8 @@ available_functions = {
 
 functions = [_function_metadata]
 
-default_message_log_dict = {'role': 'user', 'content': f'{_tag}이 무엇인가요?'}
-default_message_log_dict_rev = {'role': 'user', 'content': f'{_tag}의 도입 방법 알려줘 '}
+default_message_log_dict = {'role': 'user', 'content': f'{global_tag}이 무엇인가요?'}
+default_message_log_dict_rev = {'role': 'user', 'content': f'{global_tag}의 도입 방법 알려줘 '}
 
 
 
@@ -58,5 +58,5 @@ def get_base_system_prompt(tag):
 default_system_log_dict = {
             "role": "system",
             "content": f'''
-                {get_base_system_prompt(_tag)}
+                {get_base_system_prompt(global_tag)}
             '''}

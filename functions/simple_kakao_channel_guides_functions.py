@@ -1,5 +1,5 @@
 from functions.kakao_info_retriever import KakaoInfoRetriever
-
+global_tag = '카카오톡 채널'
 
 def get_kakao_channel_info(**kwargs):
     keyword = kwargs.get('topic', '')  # 'keyword' 키가 없으면 '기본값'을 사용
@@ -66,5 +66,5 @@ def get_base_system_prompt(tag):
 default_system_log_dict = {
             "role": "system",
             "content": f'''
-                {get_base_system_prompt('카카오톡 채널')}
+                {get_base_system_prompt(global_tag)}
             '''}
