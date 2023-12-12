@@ -33,7 +33,8 @@ def init_chat_processor_and_conversation_manager(gpt_model ="gpt-3.5-turbo"):
     # 채팅 프로세스초기화
     chat_processor = OpenAIChatProcessor(gpt_model,
                                          functions=functions,
-                                         available_functions=available_functions)  # 실제 모델 이름으로 대체
+                                         available_functions=available_functions,
+                                         init_memory=init_memory)  # 실제 모델 이름으로 대체
 
     # 대화 관리자 초기화
     conversation_manager = ConversationManager(init_memory=init_memory)
