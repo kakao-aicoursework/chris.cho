@@ -2,7 +2,8 @@ import time
 
 from ui.chat_interface import ChatInterface
 from config.open_api_config import initialize_openai_api
-from bot.openai_chat_processor import OpenAIChatProcessor
+#from bot.openai_chat_processor import OpenAIChatProcessor
+from bot.openai_chat_processor_llm import OpenAIChatProcessorLanChain as OpenAIChatProcessor
 from bot.conversation_manager import ConversationManager
 # OpenAI API 초기화
 initialize_openai_api()
@@ -113,8 +114,8 @@ def process_user_input(user_input, callback, DEBUG=True, DETAIL_DEBUG=True):
 def on_send(user_input):
     global chat_interface
     def callback(response, debug_message, DEBUG):
-        response_message = response.choices[0].message
-        message_content = response_message.content
+        response_message = response['choices'][0]['message']
+        message_content = response_message['content']
         if DEBUG:
             bot_message = (f"{debug_message}" + message_content)
             print(f"user_input:{user_input} ==> response_message_content:{message_content}")

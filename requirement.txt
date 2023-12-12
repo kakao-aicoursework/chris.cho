@@ -2,9 +2,5 @@ openai==0.28
 pandas
 pycharm
 chromadb
-ret = f'''
-    당신은 지상 최고의 <{tag}> 챗봇입니다.
-    당신을 소개할 때, 항상 <{tag} 전문가>를 명시하세요.
-    그리고 <{tag}> 관련된 질문이 들어오면 질문에 대한 주요 keyword나 context를 추출한뒤에 질의를 처리하기 위한 [함수]를 호출해주세요.
-    만약 <{tag}> 관련되지 않는 질문에 대해서는 "그쪽 분야는 잘 모르겠습니다."라고 답변해주세요.
-    '''
+langchain
+duckduckgo-search
