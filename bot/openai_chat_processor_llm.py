@@ -1,4 +1,14 @@
 from langchain.llms import OpenAI
+from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+)
+from langchain.schema import SystemMessage
+
+#enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
+
 
 class OpenAIChatProcessorLanChain:
     def __init__(self, gpt_model, temperature=0.7, max_tokens=1024, functions=None, available_functions=None):
@@ -26,20 +36,23 @@ class OpenAIChatProcessorLanChain:
             request_params["function_call"] = 'auto' if function_call is None else function_call
 
         # API 호출
-        openai = OpenAI(
-            model_name=request_params['model'],
+        openai = ChatOpenAI(model_name=request_params['model'],
             temperature=request_params['temperature'],
-            max_tokens=request_params['max_tokens']
-        )
-        input_text = ""
-        for message_dict in message_log:
-            input_text+=f"<role>{message_dict['role']}</role>\n"
-            input_text += f"<prompt>{message_dict['content']}</prompt>\n\n"
+            max_tokens=request_params['max_tokens'])
 
-        response_text = openai(input_text)
+        input_text = self.convert_input_to_txt(message_log)
+        response_text = openai.predict(input_text)
         #response = openai.ChatCompletion.create(**request_params)
 
         return self.convert_result_txt_to_response(response_text)
+
+
+    def convert_input_to_txt(self, message_log):
+        input_text = ""
+        for message_dict in message_log:
+            input_text += f"<role>{message_dict['role']}</role>\n"
+            input_text += f"<prompt>{message_dict['content']}</prompt>\n\n"
+        return input_text
 
     def convert_result_txt_to_response(self, response_text):
         response = {}
