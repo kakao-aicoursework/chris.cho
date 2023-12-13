@@ -67,7 +67,7 @@ class LanChainChatProcessor:
 
         # API 호출
         (user_message,
-         chat_history) = self.convert_input_to_txt(message_log)
+         chat_history) = self.convert_message_log_to_text(message_log)
 
         context = dict(tag=self.init_concept,
                        user_message = user_message,
@@ -79,9 +79,9 @@ class LanChainChatProcessor:
         try:
             if extract_keywords['is_related'] == 0:
                 default_answer  = self.default_answer_chain(context)
-                return self.convert_result_to_response(default_answer), context
+                return self.convert_langchaine_to_openai_response(default_answer), context
             else:
-                return self.convert_result_to_response(extract_keywords), context
+                return self.convert_langchaine_to_openai_response(extract_keywords), context
         except TypeError as err:
             raise TypeError(f"extract_keywords={extract_keywords}")
 
@@ -115,7 +115,7 @@ class LanChainChatProcessor:
             context_dict['function_response'] = function_response
             # 두 번째 응답 생성
             response_dict = self.result_answer_chain(context_dict)
-            second_response =  self.convert_result_to_response(response_dict)
+            second_response =  self.convert_langchaine_to_openai_response(response_dict)
             return second_response, True, function_name
 
 
@@ -143,7 +143,7 @@ class LanChainChatProcessor:
             raise ValueError(f"str_json_result={str_json_result}(err={str(e)})")
 
 
-    def convert_input_to_txt(self, message_log):
+    def convert_message_log_to_text(self, message_log):
         user_message = ""
         chat_history = ""
 
@@ -163,8 +163,8 @@ class LanChainChatProcessor:
 
         return user_message, chat_history
 
-    def convert_result_to_response(self, response_dict):
-        response = {}
+    def convert_langchaine_to_openai_response(self, response_dict):
+        new_response_dict = {}
         if 'result_answer' in response_dict:
             response_text = response_dict['result_answer']
             content_dict = {'content': str(response_text)}
@@ -186,8 +186,8 @@ class LanChainChatProcessor:
 
         message_dict = {'message': content_dict}
 
-        response['choices'] = [
+        new_response_dict['choices'] = [
             message_dict
         ]
 
-        return response
+        return new_response_dict
