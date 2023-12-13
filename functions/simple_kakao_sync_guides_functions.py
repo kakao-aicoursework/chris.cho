@@ -1,6 +1,6 @@
 from functions.kakao_info_retriever import KakaoInfoRetriever
 
-global_tag = '카카오싱크와 카카오채널'
+global_tag = '카카오싱크'
 
 def get_kakao_sync_info(**kwargs):
     keyword = kwargs.get('topic', '')  # 'keyword' 키가 없으면 '기본값'을 사용
