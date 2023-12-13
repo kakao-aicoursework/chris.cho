@@ -6,7 +6,7 @@
 - 현재 2번째 미션(chatGPT API -> LangChain library)까지 적용된 버전입니다.
 ## 주요 특징
 - LangChain의 `LLMChain`과  `ChatPromptTemplate` 을 활용 했습니다.
-- 기존 chatGPT API의 입출력부(함수 호출부 포함)을 호한할 수 있는 컨셉을 적용 하였습니다.
+- 기존 chatGPT API의 입출력 모듈(함수 호출부 포함)을 호환될 수 있게 하였습니다.
 
 ## 설치 방법
 [![Python 3.9+](https://img.shields.io/badge/Python-3.11-3776AB)](https://www.python.org/downloads/release/python-380/)
@@ -18,7 +18,7 @@ pip install -r requirement.txt
 ```
 
 ## 사용 방법
-어플리케이션을 실행하려면, 다음의 명령어를 사용합니다
+어플리케이션을 실행하려면, 다음의 명령어를 사용합니다:
 
 
 ```bash
