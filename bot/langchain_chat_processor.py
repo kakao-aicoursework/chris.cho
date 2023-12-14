@@ -1,5 +1,4 @@
 import json
-import os
 
 from langchain import LLMChain
 from langchain.chat_models import ChatOpenAI
@@ -7,9 +6,9 @@ from langchain.prompts.chat import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain.schema import SystemMessage
-from langchain.chains import SequentialChain
-#enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
+
+
+_DEBUG_MODE=False #디버그 정보 표시 유무
 
 class LanChainChatProcessor:
     def __init__(self, gpt_model,
@@ -85,7 +84,7 @@ class LanChainChatProcessor:
         except TypeError as err:
             raise TypeError(f"extract_keywords={extract_keywords}")
 
-    def process_chat_with_function(self, message_log, functions=None, function_call='auto', DETAIL_DEBUG=True):
+    def process_chat_with_function(self, message_log, functions=None, function_call='auto', DETAIL_DEBUG=_DEBUG_MODE):
         response, context_dict = self.process_chat(message_log, functions, function_call)
         response_message = response["choices"][0]["message"]
         # 함수 호출 처리
@@ -119,14 +118,14 @@ class LanChainChatProcessor:
             return second_response, True, function_name
 
 
-    def create_chain(self, llm, template_path, output_key):
+    def create_chain(self, llm, template_path, output_key, verbose=_DEBUG_MODE):
         return LLMChain(
             llm=llm,
             prompt=ChatPromptTemplate.from_template(
                 template=self.read_prompt_template(template_path)
             ),
             output_key=output_key,
-            verbose=True,
+            verbose=verbose,
         )
 
     def read_prompt_template(self, file_path: str) -> str:
