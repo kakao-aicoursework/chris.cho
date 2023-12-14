@@ -1,7 +1,6 @@
+import sys
 import tkinter as tk
 from tkinter import scrolledtext
-from tkinter import Toplevel, Label
-
 
 class ChatInterface:
     def __init__(self, send_callback, title="GPT AI"):
@@ -30,6 +29,7 @@ class ChatInterface:
         send_button = tk.Button(input_frame, text="Send", command=self.on_send)
         send_button.pack(side=tk.RIGHT)
 
+
     def display_message(self, message, tag):
         self.conversation.config(state=tk.NORMAL)
         self.conversation.insert(tk.END, message, tag)
@@ -45,25 +45,14 @@ class ChatInterface:
         self.display_message(f"You: {user_input}\n", "user")
         self.send_callback(user_input)
 
-    def show_popup(self, message):
-        self.popup = Toplevel(self.window)
-        self.popup.title("Message")
-        Label(self.popup, text=message).pack(pady=10, padx=10)
-
-    def close_popup(self):
-        if self.popup:
-            self.popup.destroy()
-            self.popup = None
-
     def show_loading_popup(self):
-        self.popup = self.show_popup_message(self.window, "처리중...")
+        self.popup = self._show_popup_message(self.window, "처리중...")
         pass
-
     def close_loading_popup(self):
         self.popup.destroy()
         pass
 
-    def show_popup_message(self, window, message):
+    def _show_popup_message(self, window, message):
         popup = tk.Toplevel(window)
         popup.title("")
 
@@ -95,4 +84,3 @@ class ChatInterface:
 
     def run(self):
         self.window.mainloop()
-

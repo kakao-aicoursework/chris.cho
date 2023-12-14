@@ -12,8 +12,6 @@ import os
 os.environ['ALLOW_RESET'] = 'True'
 
 
-# 비즈니스 로직을 별도의 함수로 정의
-
 # ChatInterface에서 사용할 콜백 함수
 def on_send(user_input):
     global chat_interface

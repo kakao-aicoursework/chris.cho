@@ -8,7 +8,7 @@ from langchain.prompts.chat import (
 )
 
 
-_DEBUG_MODE=False #디버그 정보 표시 유무
+_DEBUG_MODE=True #디버그 정보 표시 유무
 
 class LanChainChatProcessor:
     def __init__(self, gpt_model,

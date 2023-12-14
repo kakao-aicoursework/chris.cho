@@ -4,8 +4,8 @@ import time
 from bot.langchain_chat_processor import LanChainChatProcessor as ChatProcessor
 from bot.conversation_manager import ConversationManager
 
-_DEBUG_MODE=False #디버그 정보(응답시간, 함수명, 함수 호출 여부 등) 표시 유무
-_DETAIL_DEBUG_MODE=False #메모리안에 들어 있는 구체적인 내용
+_DEBUG_MODE=True #디버그 정보(응답시간, 함수명, 함수 호출 여부 등) 표시 유무
+_DETAIL_DEBUG_MODE=True #메모리안에 들어 있는 구체적인 내용
 
 def process_user_input(user_input, callback, DEBUG=_DEBUG_MODE, DETAIL_DEBUG=_DETAIL_DEBUG_MODE):
     # 여기서 비동기적으로 처리 로직을 수행
