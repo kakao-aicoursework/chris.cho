@@ -30,7 +30,7 @@ class DataParser:
 
         ids = []
         documents = []
-        splited_result = input_txt.split("#")
+        splited_result = input_txt.split("\n#")
         for i, mainsection_text in enumerate(splited_result):
             #str_key = f"{name}_{i}_"
             # 먼저 숫자와 점으로 시작하는 모든 위치를 찾습니다.
