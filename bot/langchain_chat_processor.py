@@ -36,7 +36,9 @@ class LanChainChatProcessor:
             #'intent': './prompt_template/misson2/0_intent_list.txt',
             'extract_keywords': './prompt_template/misson2/1_parse_input.txt',
             'result_answer': './prompt_template/misson2/2_answer_final_output.txt',
-            'default_answer': './prompt_template/misson2/2_answer_default_output.txt'
+            'default_answer': './prompt_template/misson2/2_answer_default_output.txt',
+            'is_vaild_search_result': './prompt_template/misson3/search_value_check.txt',
+            'compressed_search_result': './prompt_template/misson3/search_compress.txt'
         }
 
         self.extract_keywords_chain = self.create_chain(
@@ -47,6 +49,18 @@ class LanChainChatProcessor:
         )
         self.default_answer_chain = self.create_chain(
             llm=self.llm, template_path=template_prompt_path_dict['default_answer'], output_key="default_answer"
+        )
+
+        self.search_value_check_chain = self.create_chain(
+            llm=self.llm,
+            template_path=template_prompt_path_dict['is_vaild_search_result'],
+            output_key="output",
+        )
+
+        self.search_compression_chain = self.create_chain(
+            llm=self.llm,
+            template_path=template_prompt_path_dict['compressed_search_result'],
+            output_key="output",
         )
     def process_chat(self, message_log, functions=None, function_call=None):
         # 기본 매개변수 설정

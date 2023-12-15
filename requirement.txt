@@ -4,3 +4,4 @@ pycharm
 chromadb
 langchain
 duckduckgo-search
+google-api-python-client
