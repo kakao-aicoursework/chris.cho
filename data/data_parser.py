@@ -1,4 +1,5 @@
 import os
+import re
 from data.chroma_db_manager import ChromaVectorDBManager
 class DataParser:
     '''
@@ -6,16 +7,15 @@ class DataParser:
     '''
     def parse_file_for_kakao_guide_text(self, file_path, DEBUG=True):
         '''
-        주어진 파일 경로에서 데이터를 읽고 파싱합니다.
-         1) #으로 전반적인 데이터를 구분한다(docuement)
-            만약 좀 더 고도화 한다면?
-            - 단순히 공란으로 단어 단위로 구분하여 집어 넣는다
-            - 300~500 토큰 단위로 넣어서 집어 넣는다
+        1) #으로 title 수준의 구분을 진행
+        2) #내에 숫자가 있는 경우 sub-title 수준의 구분을 진행
 
-        2) 예외적인 #에 대해서는 좀 더 상세히 처리한다
-            - 더 효과적인 활용 방법
-            - 지원하는 기능
-        #content가 대략적으로 200-300단어 또는 1000-2000자 범위 내에 있다면, 대부분의 경우 적절
+
+        데이터 기준 예시(카카오 싱크)
+        -> table 기준 : 카카오 싱크
+        -> id(index) 기준 : # + . -> <title + sub-title>
+        -> docuement 기준 : <title + sub-title>
+        if 질의가 카카오 싱크에 대해서 왔어..
         '''
         input_txt = ""
         with open(file_path, 'r') as f:
@@ -31,16 +31,38 @@ class DataParser:
         ids = []
         documents = []
         splited_result = input_txt.split("#")
-        for i, sub_txt in enumerate(splited_result):
-            str_key = f"{name}_{i}_"
-            str_key += sub_txt.split("\n")[0]
+        for i, mainsection_text in enumerate(splited_result):
+            #str_key = f"{name}_{i}_"
+            # 먼저 숫자와 점으로 시작하는 모든 위치를 찾습니다.
+            str_key = f"{i}_"
+            str_key += mainsection_text.split("\n")[0]
 
-            #document = f"{str_key}:{sub_txt}"
-            document = f"{sub_txt}"
-            if DEBUG:
-                print(f"index={i}, title(len={len(str_key)})={str_key} | document(len={len(document)})=\n {document}")
+            matches = list(re.finditer(r'\d+\.', mainsection_text))
+            if matches:
+                pre_match = matches[0]
+                for j, cur_match in enumerate(matches[1:]):
+                    start_pos = pre_match.start()
+                    end_pos = cur_match.start()
+                    subsection_text = mainsection_text[start_pos:end_pos].strip()
+                    pre_match = cur_match
 
-            ids.append(str_key)
-            documents.append(document)
+                    number_with_dot = cur_match.group()
+                    str_key += f"_{number_with_dot}"
+                    document = f"{str_key}-{subsection_text}"
+
+                    ids.append(str_key)
+                    documents.append(document)
+                    if DEBUG:
+                        print(
+                            f"index={i}-{j}, title(len={len(str_key)})={str_key} | document(len={len(document)})=\n {document}")
+
+            else:
+                document = f"{mainsection_text}"
+                ids.append(str_key)
+                documents.append(document)
+
+                if DEBUG:
+                    print(f"index={i}, title(len={len(str_key)})={str_key} | document(len={len(document)})=\n {document}")
+
 
         return documents, ids, None

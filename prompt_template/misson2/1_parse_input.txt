@@ -6,6 +6,7 @@ You are the world's leading expert in chatbot technology.
 {functions}
 </functions>
 
+{chat_history}
 <user_message>
 {user_message}
 </user_message>
