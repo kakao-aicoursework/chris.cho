@@ -3,6 +3,9 @@ import time
 #from bot.openai_chat_processor import OpenAIChatProcessor
 from bot.langchain_chat_processor import LanChainChatProcessor as ChatProcessor
 from bot.conversation_manager import ConversationManager
+from functions import function_selector
+import constants
+
 
 _DEBUG_MODE=True #디버그 정보(응답시간, 함수명, 함수 호출 여부 등) 표시 유무
 _DETAIL_DEBUG_MODE=True #메모리안에 들어 있는 구체적인 내용
@@ -56,7 +59,7 @@ def init_chat_processor_and_conversation_manager(gpt_model ="gpt-3.5-turbo"):
     (functions,
      available_functions,
      init_memory,
-     str_function_concept) = _init_function_call_info(db_name='sample_kakao_sync_guides')
+     str_function_concept) = _init_function_call_info(db_name=None, is_multi_function=True)
     # 채팅 프로세스초기화
 
     chat_processor = ChatProcessor(gpt_model,
@@ -71,37 +74,36 @@ def init_chat_processor_and_conversation_manager(gpt_model ="gpt-3.5-turbo"):
     return chat_processor, conversation_manager
 
 def _init_function_call_info(db_name, is_multi_function=False):
+    str_function_concept = ""
+    init_memory = []
     functions = []
     available_functions = {}
-    init_memory = []
-    str_function_concept = ""
-
     if not is_multi_function:
-        if db_name == 'sample_kakao_sync_guides':
-            from functions import simple_kakao_sync_guides_functions as function_module
-        elif db_name == 'sample_kakao_channel_guides':
-            from functions import simple_kakao_channel_guides_functions as function_module
-        else:
-            raise ValueError(f"not supported db_name={db_name}")
+        (function,
+         available_function,
+         global_tag,
+         default_system_log_dict) = function_selector.get_function_call_info(db_name)
 
-        functions = [function_module.functions]
-        available_functions.update(function_module.available_functions)
-        init_memory = [function_module.default_system_log_dict]
-        str_function_concept += f"{function_module.global_tag}"
-
-
+        functions = [function]
+        available_functions.update(available_function)
+        str_function_concept += f"{global_tag}"
+        #init_memory = [] #페스로나 컨셉으로 대체
     else:
-        for db_name in ['sample_kakao_channel_guides', 'sample_kakao_sync_guides']:
-            if db_name == 'sample_kakao_sync_guides':
-                from functions import simple_kakao_sync_guides_functions as function_module
-            elif db_name == 'sample_kakao_channel_guides':
-                from functions import simple_kakao_channel_guides_functions as function_module
+        role_tag = ""
+        for db_name in [constants.KAKAO_SOCIAL_GUIDES,
+                        constants.KAKAO_SYNC_GUIDES,
+                        constants.KAKAO_CHANNEL_GUIDES]:
+            (function,
+             available_function,
+             global_tag,
+             default_system_log_dict) = function_selector.get_function_call_info(db_name)
 
-            functions.append(function_module.functions)
-            available_functions.update(function_module.available_functions)
-            #init_memory.append(function_module.default_system_log_dict)
-            init_memory = [function_module.default_system_log_dict]
-            str_function_concept += f"{function_module.global_tag},"
-        str_function_concept = str_function_concept[:-1]
+            functions.append(function)
+            available_functions.update(available_function)
+            role_tag += f"{global_tag},"
+            pass
+
+        #init_memory = [] ##페스로나 컨셉으로 대체
+        str_function_concept = role_tag[:-1]
 
     return functions,available_functions, init_memory, str_function_concept

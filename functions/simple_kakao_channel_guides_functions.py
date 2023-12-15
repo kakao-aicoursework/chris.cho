@@ -1,17 +1,9 @@
-from functions.kakao_info_retriever import KakaoInfoRetriever
-global_tag = '카카오톡 채널'
+from functions.kakao_info_retriever import get_kakao_search_results
+import constants
+global_tag = constants.KAKAO_CHANNEL_ROLE
 
 def get_kakao_channel_info(**kwargs):
-    keyword = kwargs.get('topic', '')  # 'keyword' 키가 없으면 '기본값'을 사용
-    meta_context = kwargs.get('additional_info', None)
-
-    if meta_context is not None:
-        str_text = f"{keyword}\n{meta_context}"
-    else:
-        str_text = f"{keyword}"
-
-    retriever = KakaoInfoRetriever(db_name='sample_kakao_channel_guides')
-    return retriever.get_info(str_text)
+    return get_kakao_search_results(constants.KAKAO_CHANNEL_GUIDES, **kwargs)
 
 def old_get_kakao_channel_info(topic, additional_info=None):
     garbage_topic_info = {
@@ -44,6 +36,24 @@ _function_metadata = {
     }
 }
 
+_function_metadata_eng_ver = {
+    "name": "get_kakao_channel_info",
+     "description": "Provides information related to KakaoTalk channels. For example, it answers questions about channel features, how to set up, how to use the API, etc.",
+     "parameters": {
+        "type": "object",
+        "properties": {
+            "topic": {
+                "type": "string",
+                "description": "The topic or interest of the question, e.g: 'API', 'How to', 'Settings'"
+            },
+            "additional_info": {
+                "type": "string",
+                "description": "Additional information or specific details about the question."
+            }
+        },
+        "required": ["topic"]
+    }
+}
 
 
 functions = [_function_metadata]

@@ -4,7 +4,7 @@ class DataParser:
     '''
     비정형 참고 데이터를 파싱하는 클래스입니다.
     '''
-    def parse_file_for_kakao_guide_text(self, file_path, is_line_split=False, DEBUG=True):
+    def parse_file_for_kakao_guide_text(self, file_path, DEBUG=True):
         '''
         주어진 파일 경로에서 데이터를 읽고 파싱합니다.
          1) #으로 전반적인 데이터를 구분한다(docuement)

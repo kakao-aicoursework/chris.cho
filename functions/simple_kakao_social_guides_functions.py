@@ -1,21 +1,21 @@
 from functions.kakao_info_retriever import get_kakao_search_results
 import constants
-global_tag = constants.KAKAO_SYNC_ROLE
+
+global_tag = constants.KAKAO_SOCIAL_ROLE
 
 _DEBUG=True
-def get_kakao_sync_info(**kwargs):
-    return get_kakao_search_results(constants.KAKAO_SYNC_GUIDES, **kwargs)
-
+def get_kakao_social_api_info(**kwargs):
+    return get_kakao_search_results(constants.KAKAO_SOCIAL_GUIDES, **kwargs)
 
 _function_metadata = {
-    "name": "get_kakao_sync_info",
-    "description": f"{global_tag}과 관련된 정보를 제공합니다.예를 들어, f{global_tag} 도입에 필요한 검수 및 설정 등에 대한 질문에 답변합니다.",
+    "name": "get_kakao_social_api_info",
+    "description": f"{global_tag} API의 기능, 사용법, 이용 정책 및 기타 관련 정보에 대한 질문에 답변합니다. 예를 들어, 프로필 API, 친구 정보, 피커 사용법, 사용 권한 신청 방법, 쿼터 제한, 프로필 공개 설정, 친구 정보 제공 조건 등에 대한 질문에 답변할 수 있습니다.",
     "parameters": {
         "type": "object",
         "properties": {
             "topic": {
                 "type": "string",
-                "description": "질문의 주제나 관심사, 예: '검수', '설정', '도입'"
+                "description": "질문의 주제나 관심사. 예: '프로필 API', '친구 정보', '피커 사용법', '사용 권한 신청', '쿼터 제한', '프로필 공개 설정', '친구 정보 제공 조건'"
             },
             "additional_info": {
                 "type": "string",
@@ -26,27 +26,8 @@ _function_metadata = {
     }
 }
 
-_function_metadata_eng_ver = {
-    "name": "get_kakao_sync_info",
-    "description": f"Provides information related to {global_tag}, e.g., f{global_tag} Answers questions about checks and settings required for adoption, etc.",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "topic": {
-                "type": "string",
-                "description": "The topic or interest of the question, e.g.: 'Review', 'Setup', 'Introduction'"
-            },
-            "additional_info": {
-                "type": "string",
-                "description": "Additional information or specific details about the question."
-            }
-        },
-        "required": ["topic"]
-    }
-}
-
 available_functions = {
-            "get_kakao_sync_info": get_kakao_sync_info
+            "get_kakao_social_api_info": get_kakao_social_api_info
 }
 
 functions = [_function_metadata]
