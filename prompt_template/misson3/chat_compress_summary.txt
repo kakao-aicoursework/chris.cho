@@ -1,0 +1,12 @@
+<user_message>
+{user_message}
+</user_message>
+
+<result_answer>
+{result_answer}
+</result_answer>
+
+In the style of the <user_message> language,
+Condense <result_answer> into a crisp summary. Must be under {min_char_size} characters, {max_char_size} if needed.
+
+Answer:

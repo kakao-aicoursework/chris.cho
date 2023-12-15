@@ -10,7 +10,8 @@ import constants
 _DEBUG_MODE=True #디버그 정보(응답시간, 함수명, 함수 호출 여부 등) 표시 유무
 _DETAIL_DEBUG_MODE=True #메모리안에 들어 있는 구체적인 내용
 
-def process_user_input(user_input, callback, DEBUG=_DEBUG_MODE, DETAIL_DEBUG=_DETAIL_DEBUG_MODE):
+def process_user_input(user_input, callback, DEBUG=_DEBUG_MODE, DETAIL_DEBUG=_DETAIL_DEBUG_MODE,
+                       RESULT_ANSWER_COMPRESSION_MODE=True):
     # 여기서 비동기적으로 처리 로직을 수행
     # 단기 기억 메모리 설정
     message_log = conversation_manager.get_long_term_memory()
@@ -31,7 +32,8 @@ def process_user_input(user_input, callback, DEBUG=_DEBUG_MODE, DETAIL_DEBUG=_DE
 
     (response,
      is_function_call_enabled,
-     function_name) = chat_processor.process_chat_with_function(message_log)
+     function_name,
+     chat_context_dict) = chat_processor.process_chat_with_function(message_log)
 
     if DEBUG:
         dur_time_sec = round(time.time() - start_time, 1)
@@ -48,7 +50,12 @@ def process_user_input(user_input, callback, DEBUG=_DEBUG_MODE, DETAIL_DEBUG=_DE
     else:
         response_content = callback(response, debug_message, DEBUG)
 
-    conversation_manager.manage_conversation(user_input, response_content)
+    if RESULT_ANSWER_COMPRESSION_MODE:
+        compressed_response_content = chat_processor.compress_result_answer(chat_context_dict, response_content)
+    else:
+        compressed_response_content = response_content
+
+    conversation_manager.manage_conversation(user_input, compressed_response_content)
     return response_content
 
 

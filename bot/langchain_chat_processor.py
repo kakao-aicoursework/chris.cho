@@ -38,7 +38,8 @@ class LanChainChatProcessor:
             'result_answer': './prompt_template/misson2/2_answer_final_output.txt',
             'default_answer': './prompt_template/misson2/2_answer_default_output.txt',
             'is_vaild_search_result': './prompt_template/misson3/search_value_check.txt',
-            'compressed_search_result': './prompt_template/misson3/search_compress.txt'
+            'compressed_search_result': './prompt_template/misson3/search_compress.txt',
+            'chat_compression' : './prompt_template/misson3/chat_compress_summary.txt'
         }
 
         self.extract_keywords_chain = self.create_chain(
@@ -48,7 +49,13 @@ class LanChainChatProcessor:
             llm=self.llm, template_path=template_prompt_path_dict['result_answer'], output_key="result_answer"
         )
         self.default_answer_chain = self.create_chain(
-            llm=self.llm, template_path=template_prompt_path_dict['default_answer'], output_key="default_answer"
+            llm=self.llm, template_path=template_prompt_path_dict['default_answer'], output_key="result_answer"
+        )
+
+        self.answer_compression_chain = self.create_chain(
+            llm=self.llm,
+            template_path=template_prompt_path_dict['chat_compression'],
+            output_key="comp_result_answer",
         )
 
         self.search_value_check_chain = self.create_chain(
@@ -91,14 +98,18 @@ class LanChainChatProcessor:
         extract_keywords = self.convert_str_to_dict(str_extract_keywords)
         try:
             if extract_keywords['is_related'] == 0:
-                default_answer  = self.default_answer_chain(context)
+                default_answer = self.default_answer_chain(context)
                 return self.convert_langchaine_to_openai_response(default_answer), context
             else:
                 return self.convert_langchaine_to_openai_response(extract_keywords), context
         except TypeError as err:
             raise TypeError(f"extract_keywords={extract_keywords}")
 
-    def process_chat_with_function(self, message_log, functions=None, function_call='auto', DETAIL_DEBUG=_DEBUG_MODE):
+    def process_chat_with_function(self,
+                                   message_log,
+                                   functions=None,
+                                   function_call='auto',
+                                   DETAIL_DEBUG=_DEBUG_MODE):
         response, context_dict = self.process_chat(message_log, functions, function_call)
         response_message = response["choices"][0]["message"]
         # 함수 호출 처리
@@ -107,7 +118,7 @@ class LanChainChatProcessor:
                 print(
                     f"[*] not function call!!! response_message_len = {len(response_message['content'])}\n content={response_message['content']}")
 
-            return response, False, None
+            return response, False, None, context_dict
         else:
             function_name = response_message["function_call"]["name"]
             if DETAIL_DEBUG:
@@ -128,9 +139,19 @@ class LanChainChatProcessor:
             context_dict['function_response'] = function_response
             # 두 번째 응답 생성
             response_dict = self.result_answer_chain(context_dict)
-            second_response =  self.convert_langchaine_to_openai_response(response_dict)
-            return second_response, True, function_name
+            second_response = self.convert_langchaine_to_openai_response(response_dict)
 
+            return second_response, True, function_name, context_dict
+
+    def compress_result_answer(self, chat_context_dict, response_content, min_char_size=32, max_char_size=64):
+        if len(response_content) <= min_char_size:
+            return response_content
+
+        chat_context_dict['min_char_size'] = min_char_size
+        chat_context_dict['max_char_size'] = max_char_size
+        chat_context_dict['result_answer'] = response_content
+        chat_context_dict = self.answer_compression_chain(chat_context_dict)
+        return chat_context_dict['comp_result_answer']
 
     def create_chain(self, llm, template_path, output_key, verbose=_DEBUG_MODE):
         return LLMChain(
@@ -180,9 +201,6 @@ class LanChainChatProcessor:
         new_response_dict = {}
         if 'result_answer' in response_dict:
             response_text = response_dict['result_answer']
-            content_dict = {'content': str(response_text)}
-        elif 'default_answer' in response_dict:
-            response_text = response_dict['default_answer']
             content_dict = {'content': str(response_text)}
         else:
             content_dict = None

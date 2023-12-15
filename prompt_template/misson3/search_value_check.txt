@@ -1,8 +1,8 @@
-Your job is to read the <message>, If <search_results> can help you to answer the <message>, answer Y.
+Your job is to read the <user_message>, If <search_results> can help you to answer the <message>, answer Y.
 
-<message>
+<user_message>
 {user_message}
-</message>
+</user_message>
 
 <search_results>
 {related_web_search_results}

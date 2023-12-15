@@ -1,8 +1,8 @@
-Your job is to read the <message>, Extract message-related content from <search_results>
+Your job is to read the <user_message>, Extract message-related content from <search_results>
 
-<message>
+<user_message>
 {user_message}
-</message>
+</user_message>
 
 <search_results>
 {related_web_search_results}
