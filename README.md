@@ -40,12 +40,12 @@ uvicorn main:app --reload --host=0.0.0.0 --port={port}
 
 * `bot/`: 챗봇의 핵심 로직(openai, langchain)과 대화 관리자.
 * `prompt_template/`: 챗봇이 사용하는 프롬프트 템플릿들.
-* `functions/`: 날씨 정보, 카카오 채널, 싱크 관련 API 쿼리 등의 함수 호출(function call) 모듈.
+* `functions/`: 날씨 정보, 카카오 톡 채널, 싱크, 소셜 관련 API 쿼리 등의 함수 호출(function call) 모듈.
 * `ui/`: 챗 UI 인터페이스 관련 코드.
 * `chat_skill_server/`: 카카오 챗봇과 연동하기 위한 스킬 서버 모듈.
-* `data/`: 벡터 DB 및 파싱 스크립트등의 데이터 처리 관련 모듈 
+* `data/`: 벡터 DB 및 파싱 스크립트등의 데이터 처리 관련 모듈.
 * `input/`: 과제에 주어진 입력 데이터 파일들.
 * `tests/`: 챗봇의 기능들을 테스트하기 위한 스크립트 코드.
-* `config/`: 여러 인증 정보 세팅 파일에 대한 보관/연동 모듈
+* `config/`: 여러 인증 정보 세팅 파일에 대한 보관/연동 모듈.
   * `openai_key.txt`: Openai API 사용을 위한 키 정보 (예: sk-dasfasdfdalsfdf)
-  * `google_key.txt`: 구글 웹서치 기능 사용을 위한 키 정보 (예: AIzaS;dfdf..->{GOOGLE_API_KEY};{GOOGLE_API_KEY})
+  * `google_key.txt`: 구글 웹서치 기능 사용을 위한 키 정보 (예: AIzaS;dfdf..->{GOOGLE_API_KEY};{GOOGLE_CSE_ID})
