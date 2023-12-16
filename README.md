@@ -33,6 +33,8 @@ python app.py
 uvicorn main:app --reload --host=0.0.0.0 --port={port}
 ```
 여기서 {port}값은 변경 가능 합니다.
+더 자세한 내용은 [여기](chat_skill_server/readme.md)를 참고하세요.
+
 
 
 ## 구조
