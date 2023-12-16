@@ -1,6 +1,5 @@
 openai==0.28
 pandas
-pycharm
 chromadb
 langchain
 duckduckgo-search
