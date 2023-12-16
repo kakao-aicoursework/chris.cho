@@ -8,7 +8,7 @@ from langchain.prompts.chat import (
 )
 
 
-_DEBUG_MODE=True #디버그 정보 표시 유무
+_DEBUG_MODE=False #디버그 정보 표시 유무
 
 class LanChainChatProcessor:
     def __init__(self, gpt_model,
@@ -113,35 +113,41 @@ class LanChainChatProcessor:
         response, context_dict = self.process_chat(message_log, functions, function_call)
         response_message = response["choices"][0]["message"]
         # 함수 호출 처리
-        if not response_message.get("function_call"):
-            if DETAIL_DEBUG:
-                print(
-                    f"[*] not function call!!! response_message_len = {len(response_message['content'])}\n content={response_message['content']}")
+        try:
+            if not response_message.get("function_call"):
+                if DETAIL_DEBUG:
+                    print(
+                        f"[*] not function call!!! response_message_len = {len(response_message['content'])}\n content={response_message['content']}")
 
-            return response, False, None, context_dict
-        else:
-            function_name = response_message["function_call"]["name"]
-            if DETAIL_DEBUG:
-                print(f"[***] <function_call({function_name}) !!!!")
-
-            function_to_call = self.available_functions[function_name]
-            arguments = response_message["function_call"]["arguments"]
-            if type(arguments) is str:
-                function_args = json.loads(arguments)
+                return response, False, None, context_dict
             else:
-                function_args = arguments
+                function_name = response_message["function_call"]["name"]
+                if DETAIL_DEBUG:
+                    print(f"[***] <function_call({function_name}) !!!!")
 
-            function_response = function_to_call(**function_args)
-            if DETAIL_DEBUG:
-                print(f"[***] <function_call({function_name}), result len = {len(function_response)}>\n function_response={function_response}\n************* <function_call result len = {len(function_response)}/>")
+                function_to_call = self.available_functions[function_name]
+                arguments = response_message["function_call"]["arguments"]
+                if type(arguments) is str:
+                    function_args = json.loads(arguments)
+                else:
+                    function_args = arguments
 
-            # 함수 응답을 대화에 추가
-            context_dict['function_response'] = function_response
-            # 두 번째 응답 생성
-            response_dict = self.result_answer_chain(context_dict)
-            second_response = self.convert_langchaine_to_openai_response(response_dict)
+                function_response = function_to_call(**function_args)
+                if DETAIL_DEBUG:
+                    print(
+                        f"[***] <function_call({function_name}), result len = {len(function_response)}>\n function_response={function_response}\n************* <function_call result len = {len(function_response)}/>")
 
-            return second_response, True, function_name, context_dict
+                # 함수 응답을 대화에 추가
+                context_dict['function_response'] = function_response
+                # 두 번째 응답 생성
+                response_dict = self.result_answer_chain(context_dict)
+                second_response = self.convert_langchaine_to_openai_response(response_dict)
+
+                return second_response, True, function_name, context_dict
+        except Exception as err:
+            raise err(f"response={response}, context_dict={context_dict}")
+
+
 
     def compress_result_answer(self, chat_context_dict, response_content, min_char_size=32, max_char_size=64):
         if len(response_content) <= min_char_size:

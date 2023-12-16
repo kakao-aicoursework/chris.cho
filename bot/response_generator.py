@@ -7,8 +7,8 @@ from functions import function_selector
 import constants
 
 
-_DEBUG_MODE=True #디버그 정보(응답시간, 함수명, 함수 호출 여부 등) 표시 유무
-_DETAIL_DEBUG_MODE=True #메모리안에 들어 있는 구체적인 내용
+_DEBUG_MODE=False #디버그 정보(응답시간, 함수명, 함수 호출 여부 등) 표시 유무
+_DETAIL_DEBUG_MODE=False #메모리안에 들어 있는 구체적인 내용
 
 def process_user_input(user_input, callback, DEBUG=_DEBUG_MODE, DETAIL_DEBUG=_DETAIL_DEBUG_MODE,
                        RESULT_ANSWER_COMPRESSION_MODE=True):
@@ -41,6 +41,7 @@ def process_user_input(user_input, callback, DEBUG=_DEBUG_MODE, DETAIL_DEBUG=_DE
                          f"[DEBUG] <is_function_call_enabled={is_function_call_enabled}>\n"
                          f"[DEBUG] <function_name={function_name}>\n"
                          f"\n")
+        print(f"[DEBUG] debug_message={debug_message}")
     else:
         debug_message = None
 
@@ -59,7 +60,7 @@ def process_user_input(user_input, callback, DEBUG=_DEBUG_MODE, DETAIL_DEBUG=_DE
     return response_content
 
 
-def init_chat_processor_and_conversation_manager(gpt_model ="gpt-3.5-turbo"):
+def init_chat_processor_and_conversation_manager(gpt_model ="gpt-3.5-turbo-16k"):
     global chat_processor
     global conversation_manager
 
