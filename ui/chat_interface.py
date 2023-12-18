@@ -9,7 +9,7 @@ class ChatInterface:
         self.window.title(title)
 
         self.setup_window()
-        self.display_bot_message("[조정우] 안녕하세요. 챗봇 서비스를 시작합니다. 궁금하신 내용을 물어보세요?")
+        self.display_bot_message("[조건우] 안녕하세요. 챗봇 서비스를 시작합니다. 궁금하신 내용을 물어보세요?")
 
     def setup_window(self):
         font = ("맑은 고딕", 15)

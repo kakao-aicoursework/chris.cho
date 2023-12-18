@@ -1,9 +1,11 @@
 import unittest
-from data.web_search_tool import query_web_search
 from bot.langchain_chat_processor import LanChainChatProcessor
-from config import open_api_config
+from config import open_api_config, google_api_config
 
-open_api_config.initialize_openai_api(key_file_path = '../config/openai_key.txt')
+open_api_config.initialize_openai_api()
+
+from data.web_search_tool import query_web_search
+
 class TestWebSearchTool(unittest.TestCase):
     def setUp(self):
         # OpenAI API 키 로드

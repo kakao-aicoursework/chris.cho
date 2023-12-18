@@ -170,8 +170,12 @@ class LanChainChatProcessor:
         )
 
     def read_prompt_template(self, file_path: str) -> str:
-        with open(file_path, "r") as f:
-            prompt_template = f.read()
+        try:
+            with open(file_path, "r") as f:
+                prompt_template = f.read()
+        except FileNotFoundError:
+            with open(f".{file_path}", "r") as f:
+                prompt_template = f.read()
 
         return prompt_template
 
