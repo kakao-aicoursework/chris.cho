@@ -1,6 +1,6 @@
 import os
 import re
-from data.chroma_db_manager import ChromaVectorDBManager
+from utils import io_util
 class DataParser:
     '''
     비정형 참고 데이터를 파싱하는 클래스입니다.
@@ -17,9 +17,7 @@ class DataParser:
         -> docuement 기준 : <title + sub-title>
         if 질의가 카카오 싱크에 대해서 왔어..
         '''
-        input_txt = ""
-        with open(file_path, 'r') as f:
-            input_txt = f.read()
+        input_txt = io_util.read_file(file_path)
 
         if len(input_txt) == 0:
             return None, None, None

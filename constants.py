@@ -10,7 +10,7 @@ KAKAO_CHANNEL_GUIDES = 'sample_kakao_channel_guides'
 KAKAO_SOCIAL_GUIDES = 'sample_kakao_social_guides'
 
 # 가이드 데이터 파일 경로
-KAKAO_SYNC_GUIDES_PATH = './input/project_data_카카오싱크.txt'
-KAKAO_CHANNEL_GUIDES_PATH = './input/project_data_카카오톡채널.txt'
-KAKAO_SOCIAL_GUIDES_PATH = './input/project_data_카카오소셜.txt'
+KAKAO_SYNC_GUIDES_PATH = 'input/project_data_카카오싱크.txt'
+KAKAO_CHANNEL_GUIDES_PATH = 'input/project_data_카카오톡채널.txt'
+KAKAO_SOCIAL_GUIDES_PATH = 'input/project_data_카카오소셜.txt'
 

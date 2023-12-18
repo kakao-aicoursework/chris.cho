@@ -1,11 +1,8 @@
-from config.open_api_config import initialize_openai_api
 from data.db_initializer import init_database
 from bot import response_generator
 from ui.chat_interface import ChatInterface
 
 
-# OpenAI API 초기화
-initialize_openai_api()
 
 import os
 # 환경 변수 설정

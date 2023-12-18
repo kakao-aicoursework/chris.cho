@@ -1,7 +1,10 @@
 import openai
 import json
+from bot.abstract_chat_processor import AbstractChatProcessor
+from config.open_api_config import initialize_openai_api
+initialize_openai_api()
 
-class OpenAIChatProcessor:
+class OpenAIChatProcessor(AbstractChatProcessor):
     def __init__(self, gpt_model, temperature=0.7, max_tokens = 1024, functions = None, available_functions=None):
         self.gpt_model = gpt_model
         self.temperature = temperature

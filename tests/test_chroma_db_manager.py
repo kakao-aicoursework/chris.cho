@@ -8,8 +8,7 @@ class TestVectorDBManager(unittest.TestCase):
     def setUp(self):
         # 테스트를 위한 VectorDBManager 인스턴스 초기화
         self.vector_db_manager = ChromaVectorDBManager()
-        self.vector_db_manager.get_or_create_collection('kdrama')
-
+        self.vector_db_manager.init_and_get_create_collection('kdrama')
 
 
 
@@ -52,14 +51,15 @@ class TestVectorDBManager(unittest.TestCase):
 
     def test_query_vector(self):
         # 쿼리할 벡터
+        self.test_insert_data()
         test_query_vector = ["romantic comedy drama"]
 
         # 벡터 쿼리 시도
         results = self.vector_db_manager.query_data(test_query_vector, 'kdrama', )
         # 결과가 예상대로 나오는지 확인
         self.assertIsNotNone(results)
-        self.assertIsInstance(results, dict)
-
+        self.assertIsInstance(results, list)
+        self.assertTrue(len(results) > 0)
 
 
 if __name__ == '__main__':

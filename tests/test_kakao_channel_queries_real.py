@@ -1,7 +1,7 @@
 import unittest
 from data.chroma_db_manager import ChromaVectorDBManager
 from data.data_parser import DataParser
-from old.kakao_channel_answer_query_functions import answer_kakao_channel_query
+from functions.simple_kakao_channel_guides_functions import get_kakao_channel_info
 
 class TestKakaoChannelQueriesReal(unittest.TestCase):
     def setUp(self):
@@ -18,27 +18,27 @@ class TestKakaoChannelQueriesReal(unittest.TestCase):
 
     def test_answer_query_with_valid_keyword(self):
         # 유효한 키워드로 함수 호출
-        result = answer_kakao_channel_query(self.vector_db_manager, keyword='카카오톡 채널이 무엇인가요?')
+        result = get_kakao_channel_info(topic='카카오톡 채널이 무엇인가요?')
         self.assertTrue('채널' in result)
 
     def test_answer_query_with_no_keyword(self):
         # 키워드 없이 함수 호출
         with self.assertRaises(ValueError):
-            answer_kakao_channel_query(self.vector_db_manager, keyword='')
+            get_kakao_channel_info(topic='')
 
     def test_answer_query_with_invalid_keyword(self):
         # 잘못된 키워드로 함수 호출
-        result = answer_kakao_channel_query(self.vector_db_manager, keyword='invaild')
-        self.assertEqual(result, 'No relevant documents found.')
+        with self.assertRaises(ValueError):
+            result = get_kakao_channel_info(topic=None)
 
     def test_answer_query_with_empty_database(self):
         # 데이터베이스가 비어있는 경우
         try:
-            self.vector_db_manager.init_and_get_create_collection('empty')
+            self.vector_db_manager.delete_collection('sample_kakao_channel_guides')
         except ValueError:
             pass
         with self.assertRaises(ValueError):
-            result = answer_kakao_channel_query(self.vector_db_manager, keyword='카카오톡 채널 관련 정보')
+            result = get_kakao_channel_info(topic='카카오톡 채널 관련 정보')
 
 
 
