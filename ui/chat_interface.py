@@ -1,7 +1,34 @@
 import sys
 import tkinter as tk
 from tkinter import scrolledtext
+import subprocess
 
+# macOS 다크 모드 활성화 여부를 확인하는 함수
+def is_dark_mode():
+    try:
+        # macOS의 다크 모드 설정 값을 읽어 옵니다.
+        mode = subprocess.check_output('defaults read -g AppleInterfaceStyle', shell=True)
+        return mode.strip().decode() == 'Dark'
+    except subprocess.CalledProcessError:
+        # 명령어 실행에 실패하면 다크 모드가 아닌 것으로 간주
+        return False
+
+# 다크 모드와 라이트 모드에 따른 색상 설정
+def get_mode_colors():
+    if is_dark_mode():
+        # 다크 모드용 색상
+        return {
+            "bg": "#1e1e1e",
+            "user": "#3c5c8d",
+            "assistant": "#2c2c2c",
+        }
+    else:
+        # 라이트 모드용 색상
+        return {
+            "bg": "#f0f0f0",
+            "user": "#c9daf8",
+            "assistant": "#e4e4e4",
+        }
 class ChatInterface:
     def __init__(self, send_callback, title="GPT AI"):
         self.send_callback = send_callback
@@ -12,11 +39,11 @@ class ChatInterface:
         self.display_bot_message("[조건우] 안녕하세요. 챗봇 서비스를 시작합니다. 궁금하신 내용을 물어보세요?")
 
     def setup_window(self):
-        font = ("맑은 고딕", 15)
-
-        self.conversation = scrolledtext.ScrolledText(self.window, wrap=tk.WORD, bg='#f0f0f0', font=font)
-        self.conversation.tag_configure("user", background="#c9daf8")
-        self.conversation.tag_configure("assistant", background="#e4e4e4")
+        colors = get_mode_colors()
+        font = ("맑은 고딕", 16)
+        self.conversation = scrolledtext.ScrolledText(self.window, wrap=tk.WORD, bg=colors['bg'], font=font)
+        self.conversation.tag_configure("user", background=colors['user'])
+        self.conversation.tag_configure("assistant", background=colors['assistant'])
         self.conversation.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
         input_frame = tk.Frame(self.window)
