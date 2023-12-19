@@ -18,7 +18,7 @@ initialize_openai_api()
 _DEBUG_MODE=False #디버그 정보 표시 유무
 class LanChainChatProcessor(AbstractChatProcessor):
     def __init__(self, gpt_model,
-                 temperature=0.1,
+                 temperature=0.0,
                  max_tokens=2048,
                  functions=None,
                  available_functions=None,
@@ -106,7 +106,7 @@ class LanChainChatProcessor(AbstractChatProcessor):
 
         try:
             if (extract_keywords['is_related'] == 0
-                    or extract_keywords['function_call'] == 0):
+                    or ('function_call' in extract_keywords and extract_keywords['function_call'] == 0)):
                 default_answer = self.default_answer_chain(context)
                 context.update(default_answer)
                 return self.convert_langchaine_to_openai_response(context)
@@ -114,6 +114,8 @@ class LanChainChatProcessor(AbstractChatProcessor):
                 return self.convert_langchaine_to_openai_response(context)
         except TypeError as err:
             raise TypeError(f"extract_keywords={extract_keywords}")
+        except Exception:
+            raise Exception(f"extract_keywords={extract_keywords}")
 
     def process_chat_with_function(self,
                                    message_log,
