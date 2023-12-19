@@ -1,5 +1,5 @@
 import unittest
-from data.web_search_tool import query_web_search
+from utils.web_search_tool import query_web_search
 from bot.langchain_chat_processor import LanChainChatProcessor
 from config import open_api_config
 

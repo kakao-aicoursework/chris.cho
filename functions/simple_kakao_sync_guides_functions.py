@@ -1,4 +1,4 @@
-from functions.kakao_info_retriever import get_kakao_search_results
+from data.kakao_info_retriever import get_kakao_search_results
 import constants
 global_tag = constants.KAKAO_SYNC_ROLE
 
