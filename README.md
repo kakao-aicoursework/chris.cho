@@ -8,16 +8,17 @@
     - 스킬 서버 코드 모듈화 및 연동 완료
     - 다중 데이터(톡채널, 싱크, 소셜) 전처리 및 VectorDB 연동 완료
     - History 구성 완료(ChatMemory 구현 및 압축 컨셉 적용)
-    - 프롬프트 최적화 완료(응답 수준에 따른 답변 내용 제어, 타 분야에 질문에 대한 답변 대응, 매너톤 추가 등)
+    - 프롬프트 최적화 완료(응답 수준에 따른 답변 내용 제어, 타 분야 질문에 대한 답변 대응 보완, 매너톤 추가 등)
 
 ## 주요 특징
-- LangChain의 `LLMChain`과  `ChatPromptTemplate` 을 활용 했습니다.
+- LangChain의 `LLMChain`과  `ChatPromptTemplate` 을 활용했습니다.
 - 기존 chatGPT API의 입출력 모듈(함수 호출부 포함)을 호환될 수 있게 하였습니다.
+- API, DB 등의 확장성을 위해서 abstract컨셉을 주로 활용했습니다.
 
 ## 설치 방법
 [![Python 3.9+](https://img.shields.io/badge/Python-3.11-3776AB)](https://www.python.org/downloads/release/python-380/)
 
-시작하기 전에, 다음 명령어를 실행하여 필요한 패키지들을 설치하세요:
+시작하기 전에, 다음 명령어를 실행해서 필요한 패키지들을 설치하세요:
 
 ```bash
 pip install -r requirement.txt
@@ -49,5 +50,5 @@ uvicorn main:app --reload --host=0.0.0.0 --port={port}
 * `input/`: 과제에 주어진 입력 데이터 파일들.
 * `tests/`: 챗봇의 기능들을 테스트하기 위한 스크립트 코드.
 * `config/`: 여러 인증 정보 세팅 파일에 대한 보관/연동 모듈.
-  * `openai_key.txt`: Openai API 사용을 위한 키 정보 (예: sk-dasfasdfdalsfdf)
-  * `google_key.txt`: 구글 웹서치 기능 사용을 위한 키 정보 (예: AIzaS;dfdf..->{GOOGLE_API_KEY};{GOOGLE_CSE_ID})
+  * `openai_key.txt`: Openai API 사용을 위한 키 정보(예: sk-dasfasdfdalsfdf)
+  * `google_key.txt`: 구글 웹서치 기능 사용을 위한 키 정보(예: AIzaS;dfdf..->{GOOGLE_API_KEY};{GOOGLE_CSE_ID})
