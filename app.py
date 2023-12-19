@@ -13,8 +13,13 @@ os.environ['ALLOW_RESET'] = 'True'
 def on_send(user_input):
     global chat_interface
     def callback(response, debug_message, DEBUG):
-        response_message = response['choices'][0]['message']
-        message_content = response_message['content']
+        try:
+            response_message = response['choices'][0]['message']
+            message_content = response_message['content']
+        except KeyError:
+            print(f"KeyError response={response}")
+            raise KeyError
+
         if DEBUG:
             bot_message = (f"<DEBUG_INFO\n{debug_message}\n/DEBUG_INFO>\n" + message_content)
             print(f"user_input:{user_input} ==> response_message_content:{message_content}")

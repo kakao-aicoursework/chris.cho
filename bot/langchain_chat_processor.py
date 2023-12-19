@@ -105,7 +105,8 @@ class LanChainChatProcessor(AbstractChatProcessor):
         context.update(extract_keywords)
 
         try:
-            if extract_keywords['is_related'] == 0:
+            if (extract_keywords['is_related'] == 0
+                    or extract_keywords['function_call'] == 0):
                 default_answer = self.default_answer_chain(context)
                 context.update(default_answer)
                 return self.convert_langchaine_to_openai_response(context)
