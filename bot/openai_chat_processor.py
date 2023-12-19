@@ -50,7 +50,12 @@ class OpenAIChatProcessor(AbstractChatProcessor):
 
             function_to_call = self.available_functions[function_name]
             function_args = json.loads(response_message["function_call"]["arguments"])
-            function_response = function_to_call(**function_args)
+            try:
+                function_response = function_to_call(**function_args)
+            except ValueError as err:
+                print(f"ValueError({str(err)})")
+                function_response = ""
+
             if DETAIL_DEBUG:
                 print(f"[***] <function_call({function_name}), result len = {len(function_response)}>\n function_response={function_response}\n************* <function_call result len = {len(function_response)}/>")
 
