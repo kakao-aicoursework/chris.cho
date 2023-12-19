@@ -11,13 +11,15 @@ You are the world's leading expert in chatbot technology.
 {user_message}
 </user_message>
 
-Analyze the <user_message> to determine if it is related to <{tag}>. If the message is a basic greeting or unrelated to <{tag}>, mark it as unrelated.
-
-<Output Format>
+<Instruction>
+0. Treat the words or meanings of ['cell phone', 'KakaoTalk'] as unrelated to {tag}. Note that 'KakaoTalk' and 'KakaoTalk Channel' are considered different entities.
 1. Use JSON format for the output.
 2. If <user_message> is unrelated to <{tag}>, output '''is_related : 0''' (e.g., basic greetings like "Hello").
 3. If <user_message> is related to <{tag}>, the output should be in the following format:
- -is_related : 0 or 1 #Indicates if the query is related to <{tag}>
- -function_call : 0 or 1 #If related to <{tag}>, indicates if a related function in <functions> should be called
+ -function_call : 0 or 1 #If related to <{tag}>, indicates if a related function in <functions> should be called.
  -function_name : The name of the related function in <functions>
  -arguments : A dict of the properties for function_name, based on the main information extracted from the user input
+ -is_related : 0 or 1 # Indicates if the query is related to <{tag}>. If function_call is 0, also set this to 0.
+</Instruction>
+
+Analyze the <user_message> to determine if it is related to <{tag}>. If the message is a basic greeting or unrelated to <{tag}>, mark it as unrelated.
