@@ -1,6 +1,6 @@
 # chris.cho의 프로젝트 저장소입니다.
 ### AI Chatbot with LangChain(+OpenAI) and Chroma Vector DB
-
+![final metric result image](screen_shot.png)
 ## 개요
 - 파이썬 기반의 LangChain(+openai)이 적용된 AI 챗봇 어플리케이션입니다. 
 - 2번째 미션(chatGPT API -> LangChain library) 적용 했습니다.
@@ -8,7 +8,7 @@
     - 스킬 서버 코드 모듈화 및 연동 완료
     - 다중 데이터(톡채널, 싱크, 소셜) 전처리 및 VectorDB 연동 완료
     - History 구성 완료(ChatMemory 구현 및 압축 컨셉 적용)
-    - 최적화 진행 중...
+    - 프롬프트 최적화 완료(응답 수준에 따른 답변 내용 제어, 타 분야에 질문에 대한 답변 대응, 매너톤 추가 등)
 
 ## 주요 특징
 - LangChain의 `LLMChain`과  `ChatPromptTemplate` 을 활용 했습니다.
